@@ -18,7 +18,7 @@ export default function Home() {
     };
 
     const redirectTimeout = setTimeout(() => {
-      window.location.href = "https://ticket.antrein.com/";
+      window.location.href = "https://marathon-ticket.antrein.com/";
     }, 5000);
 
     return () => {
