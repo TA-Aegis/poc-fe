@@ -1,3 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+.progress-bar {
+  background-color: transparent;
+  border: 3px lightgray solid;
+  border-radius: 20px;
+  position: relative;
+  margin: 4px 0 16px 0;
+  height: 30px;
+  width: 100%;
+}
+
+.completed-bar {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    color: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 0;
+    opacity: 0;
+    transition: width 2s ease 0.4s;
+    padding: 0 8px;
+  }
+
+  .dashed {
+    width: 96%;
+    border: 2px dashed black;
+
+  }
+
+  
+.progress-information {
+  display: none;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.stickman {
+    max-width: 12.5%;
+    position: absolute;
+    right: 0;
+    margin-right: 10px;
+}
+
+p {
+  font-family: "Poppins", "Helvetica", "sans-serif";
+  letter-spacing: 1px;
+  line-height: 1.5;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 300;
+  font-size: 1rem;
+  color: rgba(48, 48, 48, 0.6);
+}
