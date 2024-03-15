@@ -3,27 +3,49 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+type LineInfo = {
+  id: string;
+  queueNumber: number;
+  estimatedTime: number;
+  percentageProgress: number;
+  isFinished: boolean;
+};
+
+function formatTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
+
 export default function Home() {
-  const [lineInfo, setLineInfo] = useState(null);
+  const [lineInfo, setLineInfo] = useState<LineInfo | null>(null);
 
   useEffect(() => {
     const eventSource = new EventSource(
-      "https://staging-poc-api.antrein.com/events"
+      "https://staging-poc-api.antrein.com/queue"
     );
     eventSource.onmessage = (event) => {
-      console.log(event);
-      const newData = JSON.parse(event.data);
-      console.log(newData);
+      const newData: LineInfo = JSON.parse(event.data);
+      if (newData.isFinished) {
+        window.location.href = "https://marathon-ticket.antrein.com/";
+        return;
+      }
       setLineInfo(newData);
     };
 
-    const redirectTimeout = setTimeout(() => {
-      window.location.href = "https://marathon-ticket.antrein.com/";
-    }, 5000);
+    // const redirectTimeout = setTimeout(() => {
+    //   window.location.href = "https://marathon-ticket.antrein.com/";
+    // }, 5000);
 
     return () => {
       eventSource.close();
-      clearTimeout(redirectTimeout); // Clear the timeout to prevent memory leaks
+      // clearTimeout(redirectTimeout); // Clear the timeout to prevent memory leaks
     };
   }, []);
 
@@ -43,17 +65,43 @@ export default function Home() {
             YOU ARE NOW IN LINE
           </h1>
           <p className="mb-5 text-white">
-            You are in line for TEST EVENT. When it is your turn, you will have
-            10 minutes to finish the order.
+            You are in line for Marathon Run. When it is your turn, you will
+            have 10 minutes to finish the order.
           </p>
 
           <div>
             {/* <progress className="progress w-56" value={50} max="100"></progress> */}
-            <progress className="progress progress-primary w-72"></progress>
+            {/* <progress
+              className="progress progress-primary w-72"
+              value={progressPercentage}
+              max="100"
+            ></progress> */}
+            <div className="progress-bar">
+              <div
+                className="completed-bar"
+                style={{
+                  width: `${lineInfo?.percentageProgress || 0}%`,
+                  opacity: 1,
+                }}
+              >
+                <div className="stickman">
+                  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fclipart-library.com%2Fimages_k%2Fman-running-silhouette-vector%2Fman-running-silhouette-vector-9.png&f=1&nofb=1&ipt=611c80349f21355248d9ca4fa575b2507ef5cd6f9bc7c4e80f0eb0694fba509e&ipo=images" />
+                </div>
+              </div>
+            </div>
+            <div className="progress-information">
+              <p className="text-colour--primary-red--80">
+                {lineInfo?.percentageProgress || 0}%
+              </p>
+            </div>
           </div>
 
-          <p className="mt-5 text-white">You number in line: </p>
-          <p className="text-white">You estimated wait time: </p>
+          <p className="mt-5 text-white">
+            You number in line: {lineInfo?.queueNumber || "-"}
+          </p>
+          <p className="text-white">
+            {formatTime(lineInfo?.estimatedTime || 0)}
+          </p>
 
           <button className="btn btn-primary mt-5">Redirect</button>
         </div>
